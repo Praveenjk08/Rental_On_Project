@@ -17,5 +17,7 @@
 <h2>
 
 </h2>
+<a href="adminreg.jsp">Admin</a>
+<a href="userdetails.jsp">UserDetails</a>
 </body>
 </html>

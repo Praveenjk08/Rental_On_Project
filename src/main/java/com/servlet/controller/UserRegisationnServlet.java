@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import com.servlet.Dao.UserDao;
 import com.servlet.Dao.UserDaoImlimaenation;
+import com.servlet.Dto.Admin;
 import com.servlet.Dto.User;
 
 import jakarta.servlet.ServletException;
@@ -38,8 +39,12 @@ public class UserRegisationnServlet extends HttpServlet  {
 //		LocalDateTime curDateTime=LocalDateTime.parse(req.getParameter("date"));
 		User user=new User(name, email, password, phone);
 		boolean isRegiseter=udao.isRegisterd(user);
+		
 		if(isRegiseter==true)
 		{
+			Admin admin=new Admin();
+//			admin.setUser_Id(isRegiseter);
+			
 			req.getRequestDispatcher("login.jsp")
 			.forward(req, resp);
 		}

@@ -5,20 +5,29 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.servlet.Db.DatabaseConnection;
 import com.servlet.Dto.User;
 import com.servlet.dbutil.DbConnection;
+import java.sql.Statement;
 
 public class UserDaoImlimaenation implements  UserDao{
 	Connection con=null;
 	PreparedStatement pst=null;
+
 	
 	@Override
 	public boolean isRegisterd(User user) {
+//		int userId=0;
 		
 		String register="insert into users(full_name, email, password, phone_number, created_at) values(?,?,?,?,?)";
+		
+		
 		con=DatabaseConnection.givemePower();
 		try {
 			pst=con.prepareStatement(register);
@@ -30,9 +39,19 @@ public class UserDaoImlimaenation implements  UserDao{
 			pst.setTimestamp(5,java.sql.Timestamp.valueOf(LocalDateTime.now()));
 //			pst.setTimestamp(5, java.sql.Timestamp.valueOf(user.getCurrDateTime()));
 			int count=pst.executeUpdate();
+			
+			
 			if(count>0) {
 				return true;
+				
+				
+				
 			}
+//			System.out.println("Generated User ID = " + userId);
+
+			// Now forward userId to admin servlet OR session
+//			request.getSession().setAttribute("userId", userId);
+//			response.sendRedirect("adminRegister.jsp");
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,6 +90,59 @@ public class UserDaoImlimaenation implements  UserDao{
 		return user;
 		
 	}
+
+	@Override
+	public List<User> getUserDetails() {
+		
+		List<User> userlist=new ArrayList<User>();
+		User user=null;
+		String deatils="select * from users";
+		con=DatabaseConnection.givemePower();
+		try {
+			pst=con.prepareStatement(deatils);
+			ResultSet res=pst.executeQuery();
+			while (res.next()) {
+				user=new User();
+				System.out.println(res.getInt("user_id"));
+				user.setU_id(res.getInt("user_id"));
+				user.setFullname(res.getString("full_name"));
+				user.setEmail(res.getString("email"));
+				user.setPass(res.getString("password"));
+				user.setPhone(res.getLong("phone_number"));
+				user.setCurrDateTime(res.getTimestamp("created_at"));
+				userlist.add(user);
+				
+				
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return userlist;
+	}
+
+	@Override
+	public boolean isDelete(int uid) {
+		String  delete="delete from users where user_id=?";
+		con=DatabaseConnection.givemePower();
+		try {
+			pst=con.prepareStatement(delete);
+			pst.setInt(1, uid);
+			int count=pst.executeUpdate();
+			if(count>0)
+			{
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+	
 	
 
 }
